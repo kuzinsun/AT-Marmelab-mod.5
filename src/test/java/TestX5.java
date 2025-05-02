@@ -27,7 +27,7 @@ public class TestX5 {
 
         WebDriver originalDriver = new ChromeDriver(options);
 
-        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 500);
+        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 1000);
 
         return driver;
     }
@@ -38,7 +38,7 @@ public class TestX5 {
 
         WebDriver originalDriver = new FirefoxDriver();
 
-        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 500);
+        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 1000);
 
         return driver;
     }
@@ -56,7 +56,7 @@ public class TestX5 {
 
     @Test
     public void testSearch() {
-        //testOnBrowser("chrome");
+        testOnBrowser("chrome");
         testOnBrowser("firefox");
     }
 
