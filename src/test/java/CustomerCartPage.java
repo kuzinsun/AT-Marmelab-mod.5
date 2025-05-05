@@ -3,14 +3,13 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 
 public class CustomerCartPage {
+    private final WebDriver driver;
 
-    protected static WebDriver driver;
+    public CustomerCartPage(WebDriver driver) {this.driver = driver;}
 
     private final By address = By.xpath("//textarea[@name='address']");
     private final By saveButton = By.xpath("//button[@aria-label='Save']");
     private final By backupAddress = By.xpath("//textarea[@name='address']");
-
-    public CustomerCartPage(WebDriver driver) {CustomerCartPage.driver = driver;}
 
     /*public CustomerCartPage clickAddress() {
         driver.findElement(address).click();

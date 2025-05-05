@@ -3,13 +3,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class CustomersPage {
+    private final WebDriver driver;
 
-    protected static WebDriver driver;
+    public CustomersPage(WebDriver driver) {this.driver = driver;}
 
     private final By searchField = By.xpath("//input[@placeholder='Search']");
     //private final By customerCart = By.xpath("//div[contains(@class, 'MuiTypography-root MuiTypography-body2')]");
-
-    public CustomersPage(WebDriver driver) {CustomersPage.driver = driver;}
 
     public CustomersPage search(String customer) {
         driver.findElement(searchField).sendKeys(customer);

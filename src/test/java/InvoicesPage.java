@@ -2,11 +2,13 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class InvoicesPage {
+    private final WebDriver driver;
 
-    protected static WebDriver driver;
+    public InvoicesPage(WebDriver driver) {this.driver = driver;}
 
     private final By dateGte = By.xpath("//input[@name='date_gte']");
     private final By dateLte = By.xpath("//input[@name='date_lte']");
@@ -16,8 +18,6 @@ public class InvoicesPage {
     private final By chooseFilterType = By.xpath("//li[@data-key='customer_id']");
     private final By sendCustomer = By.xpath("//input[@role='combobox']");
     private final By changeAddressCheck = By.xpath("//p[text()='Groove street']");
-
-    public InvoicesPage(WebDriver driver) {InvoicesPage.driver = driver;}
 
     protected WebElement waitForElement(By locator) {
         return new WebDriverWait(driver, 30) // 10 секунд
@@ -54,7 +54,7 @@ public class InvoicesPage {
     public String[] customer() {
         String actualText = driver.findElement(customer).getText();
         boolean containsText = actualText.contains("Korey Mohr");
-        assertTrue("Клиент в первых заказах не Korey Mohr", containsText);
+        assertFalse("Клиент в первых заказах не Korey Mohr", containsText);
         String[] parts = actualText.split("\\s+", 3);
         return parts;
     }

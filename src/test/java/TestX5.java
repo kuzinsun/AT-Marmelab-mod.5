@@ -1,17 +1,69 @@
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
-
+@RunWith(Parameterized.class)
 public class TestX5 {
-
     private WebDriver driver;
+    private String browserType;
+
+    private OrdersPage ordersPage;
+    private LoginPage loginPage;
+    private MainPage mainPage;
+    private InvoicesPage invoicesPage;
+    private CustomersPage customersPage;
+    private CustomerCartPage customerCartPage;
+
+    public String getCustomer;
+    public String getCustomerName;
+    public String getCustomerSurename;
+    public String oldAddress;
+
+    public TestX5(String browserType) {
+        this.browserType = browserType;
+    }
+
+    @Parameterized.Parameters(name = "Browser: {0}")
+    public static Collection<Object[]> browsers() {
+        return Arrays.asList(new Object[][] {
+                        {"chrome"},
+                        {"firefox"}
+                });
+    }
+
+    @Before
+    public void setUp() {
+        if ("chrome".equals(browserType)) {
+            driver = initChromeDriver();
+        } else {
+            driver = initFirefoxDriver();
+        }
+
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
+
+        loginPage = new LoginPage(driver);
+        mainPage = new MainPage(driver);
+        ordersPage = new OrdersPage(driver);
+        invoicesPage = new InvoicesPage(driver);
+        customersPage = new CustomersPage(driver);
+        customerCartPage = new CustomerCartPage(driver);
+
+        String base_url = ConfigLoader.getProperty("base_url");
+        driver.get(base_url);
+    }
 
     private WebDriver initChromeDriver() {
         String driver_path = ConfigLoader.getProperty("chrome_driver_path");
@@ -27,7 +79,7 @@ public class TestX5 {
 
         WebDriver originalDriver = new ChromeDriver(options);
 
-        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 1000);
+        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 800);
 
         return driver;
     }
@@ -38,26 +90,9 @@ public class TestX5 {
 
         WebDriver originalDriver = new FirefoxDriver();
 
-        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 1000);
+        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 800);
 
         return driver;
-    }
-
-    public static OrdersPage ordersPage;
-    public static LoginPage loginPage;
-    public static MainPage mainPage;
-    public static InvoicesPage invoicesPage;
-    public static CustomersPage customersPage;
-    public static CustomerCartPage customerCartPage;
-    public String getCustomer;
-    public String getCustomerName;
-    public String getCustomerSurename;
-    public String oldAddress;
-
-    @Test
-    public void testSearch() {
-        testOnBrowser("chrome");
-        testOnBrowser("firefox");
     }
 
     public static void pause(int seconds) {
@@ -68,32 +103,8 @@ public class TestX5 {
         }
     }
 
-    public void testOnBrowser(String browserType) {
-
-        WebDriver driver;
-
-        if ("firefox".equalsIgnoreCase(browserType)) {
-            driver = initFirefoxDriver();
-            System.out.println("Running test on Firefox");
-        } else {
-            driver = initChromeDriver();
-            System.out.println("Running test on Chrome");
-        }
-
-        try {
-            driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-            driver.manage().window().maximize();
-
-            loginPage = new LoginPage(driver);
-            mainPage = new MainPage(driver);
-            ordersPage = new OrdersPage(driver);
-            invoicesPage = new InvoicesPage(driver);
-            customersPage = new CustomersPage(driver);
-            customerCartPage = new CustomerCartPage(driver);
-
-            String base_url = ConfigLoader.getProperty("base_url");
-            driver.get(base_url);
-
+    @Test
+    public void testOnBrowser() {
             loginPage.login();
 
             mainPage.ordersLinkClick();
@@ -153,8 +164,11 @@ public class TestX5 {
             mainPage.invoicesLinkClick();
 
             invoicesPage.checkOldAddressRevert(oldAddress);
+    }
 
-        } finally {
+    @After
+    public void shutDownDriver() {
+        if (driver != null) {
             driver.quit();
         }
     }
