@@ -54,8 +54,7 @@ public class InvoicesPage {
     public String[] customer() {
         String actualText = driver.findElement(customer).getText();
         boolean containsText = actualText.contains("Korey Mohr");
-        System.out.println("Проверка текста на 'Korey Mohr': " + (containsText ? "PASSED" : "FAILED"));
-        System.out.println("Актуальный текст: '" + actualText + "'");
+        assertTrue("Клиент в первых заказах не Korey Mohr", containsText);
         String[] parts = actualText.split("\\s+", 3);
         return parts;
     }

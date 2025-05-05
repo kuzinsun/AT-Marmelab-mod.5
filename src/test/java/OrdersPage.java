@@ -6,6 +6,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 
+import static org.junit.Assert.assertTrue;
+
 public class OrdersPage {
 
     protected static WebDriver driver;
@@ -38,12 +40,7 @@ public class OrdersPage {
     public OrdersPage checkCheckboxClickResult() {
         waitForElement(checkboxClickResult);
         boolean result = driver.findElement(checkboxClickResult).isDisplayed();
-        if (result) {
-            System.out.println("Выбрано 3 чекбокса");
-        } else {
-            throw new RuntimeException("Не выбраны 3 чекбокса");
-        }
+        assertTrue("Выбрано 3 чекбокса, сообщение отображается", result);
         return this;
-
     }
 }
