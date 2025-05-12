@@ -77,22 +77,14 @@ public class TestX5 {
         prefs.put("profile.password_manager_leak_detection", false);
         options.setExperimentalOption("prefs", prefs);
 
-        WebDriver originalDriver = new ChromeDriver(options);
-
-        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 800);
-
-        return driver;
+        return new ChromeDriver(options);
     }
 
     private WebDriver initFirefoxDriver() {
         String driver_path = ConfigLoader.getProperty("firefox_driver_path");
         System.setProperty("webdriver.gecko.driver", driver_path);
 
-        WebDriver originalDriver = new FirefoxDriver();
-
-        this.driver = SlowedWebDriver.wrapDriver(originalDriver, 800);
-
-        return driver;
+        return new FirefoxDriver();
     }
 
     public static void pause(int seconds) {
@@ -105,65 +97,82 @@ public class TestX5 {
 
     @Test
     public void testOnBrowser() {
-            loginPage.login();
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
 
-            mainPage.ordersLinkClick();
+        loginPage = new LoginPage(driver);
+        mainPage = new MainPage(driver);
+        ordersPage = new OrdersPage(driver);
+        invoicesPage = new InvoicesPage(driver);
+        customersPage = new CustomersPage(driver);
+        customerCartPage = new CustomerCartPage(driver);
 
-            ordersPage.clickDeliveredTab();
+        String base_url = ConfigLoader.getProperty("base_url");
+        driver.get(base_url);
 
-            ordersPage.clickFirstThreeCheckboxes();
+        loginPage.login();
 
-            ordersPage.checkCheckboxClickResult();
+        mainPage.ordersLinkClick();
 
-            mainPage.invoicesLinkClick();
+        ordersPage.clickDeliveredTab();
 
-            invoicesPage.inputDateGte();
+        ordersPage.clickFirstThreeCheckboxes();
 
-            invoicesPage.inputDateLte();
+        ordersPage.checkCheckboxClickResult();
 
-            pause(2);
+        mainPage.invoicesLinkClick();
 
-            String[] parts = invoicesPage.customer();
+        invoicesPage.inputDateGte();
 
-            getCustomer = parts[0] + " " + parts[1];
-            getCustomerName = parts[0];
-            getCustomerSurename = parts[1];
+        invoicesPage.inputDateLte();
 
-            mainPage.customersLinkClick();
+        invoicesPage.clickExpandButton();
 
-            customersPage.search(getCustomer);
+        String[] parts = invoicesPage.customer();
 
-            customersPage.clickCustomerCart(getCustomerName, getCustomerSurename);
+        getCustomer = parts[0] + " " + parts[1];
+        getCustomerName = parts[0];
+        getCustomerSurename = parts[1];
 
-            oldAddress = customerCartPage.getOldAddress();
+        mainPage.customersLinkClick();
 
-            customerCartPage.enterAddress();
+        customersPage.search(getCustomer);
 
-            customerCartPage.clickSaveButton();
+        customersPage.clickCustomerCart(getCustomerName, getCustomerSurename);
 
-            mainPage.invoicesLinkClick();
+        oldAddress = customerCartPage.getOldAddress();
 
-            invoicesPage.clickAddFilter();
+        customerCartPage.enterAddress();
 
-            invoicesPage.clickChooseFilterType();
+        customerCartPage.clickSaveButton();
 
-            invoicesPage.sendCustomer(getCustomer);
+        mainPage.invoicesLinkClick();
 
-            invoicesPage.clickExpandButton();
+        invoicesPage.clickAddFilter();
 
-            invoicesPage.changeAddressCheck();
+        invoicesPage.clickChooseFilterType();
 
-            mainPage.customersLinkClick();
+        invoicesPage.sendCustomer(getCustomer);
 
-            customersPage.clickSecondCustomerCart(getCustomerName, getCustomerSurename);
+        invoicesPage.chooseCustomerInFilterList(getCustomer);
 
-            customerCartPage.revertAddress(oldAddress);
+        invoicesPage.clickExpandButton();
 
-            customerCartPage.clickSaveButton();
+        invoicesPage.changeAddressCheck();
 
-            mainPage.invoicesLinkClick();
+        mainPage.customersLinkClick();
 
-            invoicesPage.checkOldAddressRevert(oldAddress);
+        customersPage.search(getCustomer);
+
+        customersPage.clickSecondCustomerCart(getCustomerName, getCustomerSurename);
+
+        customerCartPage.revertAddress(oldAddress);
+
+        customerCartPage.clickSaveButton();
+
+        mainPage.invoicesLinkClick();
+
+        invoicesPage.checkOldAddressRevert(oldAddress);
     }
 
     @After

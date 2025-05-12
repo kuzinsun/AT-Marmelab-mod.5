@@ -11,8 +11,12 @@ import static org.junit.Assert.assertTrue;
 public class OrdersPage {
 
     private final WebDriver driver;
+    private final WebDriverWait wait;
 
-    public OrdersPage(WebDriver driver) {this.driver = driver;}
+    public OrdersPage(WebDriver driver) {
+        this.driver = driver;
+        wait = new WebDriverWait(driver, 15);
+    }
 
     protected WebElement waitForElement(By locator) {
         return new WebDriverWait(driver, 30) // 10 секунд
@@ -22,6 +26,7 @@ public class OrdersPage {
     private final By deliveredTab = By.xpath("//span[text()='delivered']");
     private final By checkboxList = By.xpath("   //input[contains(@class, 'PrivateSwitchBase') and @type='checkbox']");
     private final By checkboxClickResult = By.xpath("//h6[text()='3 items selected']");
+    private final By returnedTab = By.xpath("//span[text()=\"Returned\"]");
 
     public OrdersPage clickDeliveredTab() {
         waitForElement(deliveredTab);
@@ -30,6 +35,7 @@ public class OrdersPage {
     }
 
     public OrdersPage clickFirstThreeCheckboxes() {
+        wait.until(ExpectedConditions.presenceOfElementLocated(returnedTab));
         List<WebElement> checkboxes = driver.findElements(checkboxList);
         for(int i = 1; i < 4 && i < checkboxes.size(); i++) {
             checkboxes.get(i).click();
